@@ -52,6 +52,7 @@ void Acker::recv( void )
 
    fprintf( _log_file,"%s DATA RECEIVED senderid=%d, seq=%d, send_time=%ld, recv_time=%ld, 1delay=%.4f \n",
       _name.c_str(),  _server ? contents->sender_id : _ack_id, contents->sequence_number, contents->sent_timestamp, contents->recv_timestamp,oneway ); 
+   printf("Sending ACK: %s seq=%d \n",_name.c_str(),contents->sequence_number);
 }
 
 void Acker::tick( void )
