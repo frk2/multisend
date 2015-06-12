@@ -105,6 +105,8 @@ void PacketSocket::send_raw( const std::string & input )
   ssize_t bytes_sent = send( sock, input.data(), input.size(), 0 );
   if ( bytes_sent < 0 ) {
     perror( "send" );
+    fprintf( stderr, "Send size (%ld) too long!\n",
+             input.size());
     exit( 1 );
   }
 }

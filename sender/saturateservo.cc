@@ -59,8 +59,8 @@ void SaturateServo::recv( void )
       _max_ack_id = contents->ack_number;
     }
 
-        printf( "%s ACK RECEIVED senderid=%d seq=%d, send_time=%ld, recv_time=%ld\n",
-	  _name.c_str(), contents->sender_id, contents->sequence_number, contents->sent_timestamp, contents->recv_timestamp );
+//         printf( "%s ACK RECEIVED senderid=%d seq=%d, send_time=%ld, recv_time=%ld\n",
+// 	  _name.c_str(), contents->sender_id, contents->sequence_number, contents->sent_timestamp, contents->recv_timestamp );
 
     int64_t rtt_ns = contents->recv_timestamp - contents->sent_timestamp;
     double rtt = rtt_ns / 1.e9;
@@ -122,8 +122,8 @@ void SaturateServo::tick( void )
       _send.send( Socket::Packet( _remote, outgoing.str( 1400 ) ) );
 
       
-      printf( "%s DATA SENT LOOP %d senderid=%d seq=%d, send_time=%ld, recv_time=%ld\n",
-      _name.c_str(), amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp );
+//       printf( "%s DATA SENT LOOP %d senderid=%d seq=%d, send_time=%ld, recv_time=%ld\n",
+//       _name.c_str(), amount_to_send, outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp );
 
       _packets_sent++;
     }
@@ -142,8 +142,8 @@ void SaturateServo::tick( void )
     _send.send( Socket::Packet( _remote, outgoing.str( 1400 ) ) );
 
     
-    printf( "%s DATA SENT senderid=%d seq=%d, send_time=%ld, recv_time=%ld\n",
-    _name.c_str(), outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp );
+//     printf( "%s DATA SENT senderid=%d seq=%d, send_time=%ld, recv_time=%ld\n",
+//     _name.c_str(), outgoing.sender_id, outgoing.sequence_number, outgoing.sent_timestamp, outgoing.recv_timestamp );
 
     _packets_sent++;
 
