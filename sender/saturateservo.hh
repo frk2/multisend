@@ -34,7 +34,7 @@ private:
   static const int LOWER_WINDOW = 20;
   static const int UPPER_WINDOW = 1500;
 
-  static constexpr double LOWER_RTT = 0.75;
+  static constexpr double LOWER_RTT = 1.25;
   static constexpr double UPPER_RTT = 3.0;
 
 public:
