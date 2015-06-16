@@ -30,10 +30,13 @@ int PacketSocket::get_index( const std::string & name ) const
 
 PacketSocket::PacketSocket( const std::string & s_interface,
 			    const std::string & s_from_filter,
-			    const std::string & s_to_filter )
+			    const std::string & s_to_filter,
+                bool is_outgoing
+                          )
   : sock( socket( AF_PACKET, SOCK_RAW, htons( ETH_P_ALL ) ) ),
     _from_filter( MACAddress::parse_human( s_from_filter ) ),
-    _to_filter( MACAddress::parse_human( s_to_filter ) )
+    _to_filter( MACAddress::parse_human( s_to_filter ) ),
+    _outgoing(is_outgoing)
 {
   /* create packet socket */
 
@@ -67,9 +70,10 @@ PacketSocket::PacketSocket( const std::string & s_interface,
   }
 }
 
-vector< string > PacketSocket::recv_raw( void )
+pair<vector< string >, vector< string >> PacketSocket::recv_raw( void )
 {
   vector< string > ret;
+  vector< string > nodelay;
 
   const int BUFFER_SIZE = 2048;
 
@@ -92,12 +96,18 @@ vector< string > PacketSocket::recv_raw( void )
   const MACAddress destination_address( packet.substr( 0, 6 ) );
   const MACAddress source_address( packet.substr( 6, 6 ) );
 
-  if (  _to_filter.matches( destination_address )
-	&& _from_filter.matches( source_address ) ) {
-    ret.push_back( packet );
+  if (  _to_filter.matches( destination_address ) && _from_filter.matches( source_address ) ) {
+      ret.push_back( packet );
   }
-
-  return ret;
+  else if (_outgoing && _from_filter.matches(source_address)) {
+        nodelay.push_back( packet );
+    }
+  else if (!_outgoing && _to_filter.matches(destination_address)) {
+        nodelay.push_back( packet );
+    }
+  
+  
+  return std::make_pair(ret,nodelay);
 }
 
 void PacketSocket::send_raw( const std::string & input )

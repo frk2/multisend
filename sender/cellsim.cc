@@ -283,13 +283,18 @@ int main( int argc, char *argv[] )
   up_filename = argv[ 1 ];
   down_filename = argv[ 2 ];
   client_mac = argv[ 3 ];
-  loss_rate = atof(argv[ 4 ]);
+  
+//   loss_rate = atof(argv[ 4 ]);
+  loss_rate = 0;
 
+  auto target_mac = argv[4];
   auto internet_side_interface = argv[ 5 ];
   auto client_side_interface   = argv[ 6 ];
+  
+  // 4th parameter is now the target MAC (gateway mac for example, to avoid local LAN noise)
 
-  PacketSocket internet_side( internet_side_interface, string(), string( client_mac ) );
-  PacketSocket client_side( client_side_interface, string( client_mac ), string() );
+  PacketSocket internet_side( internet_side_interface, string( target_mac ), string( client_mac ), false);
+  PacketSocket client_side( client_side_interface, string( client_mac ), string( target_mac ), true );
 
   /* Read in schedule */
   uint64_t now = timestamp();
@@ -309,16 +314,27 @@ int main( int argc, char *argv[] )
     }
 
     if ( sel.read( client_side.fd() ) ) {
-      std::vector< string > filtered_packets( client_side.recv_raw() );
+      std::pair < vector< string >, vector< string > > received  (client_side.recv_raw());
+      std::vector< string > filtered_packets  = received.first;
+      std::vector< string > nodelay_packets = received.second;
       for ( auto it = filtered_packets.begin(); it != filtered_packets.end(); it++ ) {
 	uplink.write( *it );
+      }
+      for ( auto it = nodelay_packets.begin(); it != nodelay_packets.end(); it++ ) {
+          internet_side.send_raw(*it );
       }
     }
 
     if ( sel.read( internet_side.fd() ) ) {
-      std::vector< string > filtered_packets( internet_side.recv_raw() );
+        std::pair < vector< string >, vector< string > > received  (internet_side.recv_raw());
+        std::vector< string > filtered_packets  = received.first;
+        std::vector< string > nodelay_packets = received.second;
+        
       for ( auto it = filtered_packets.begin(); it != filtered_packets.end(); it++ ) {
 	downlink.write( *it );
+      }
+      for ( auto it = nodelay_packets.begin(); it != nodelay_packets.end(); it++ ) {
+          client_side.send_raw(*it );
       }
     }
 
