@@ -211,7 +211,7 @@ void DelayQueue::tick( void )
 	_total_bytes += _limbo.front().packet.contents.size();
 	_used_bytes += _limbo.front().packet.contents.size();
 
-	fprintf( stderr, "%s %f delivery %d\n", _name.c_str(), convert_timestamp( now ) / 1000.0, int(now - _limbo.front().packet.entry_time) );
+	//fprintf( stderr, "%s %f delivery %d\n", _name.c_str(), convert_timestamp( now ) / 1000.0, int(now - _limbo.front().packet.entry_time) );
 
 	_delivered.push_back( _limbo.front().packet.contents );
 	bytes_to_play_with -= (_limbo.front().packet.contents.size() - _limbo.front().bytes_earned);
@@ -244,7 +244,7 @@ void DelayQueue::tick( void )
 	  _total_bytes += packet.contents.size();
 	  _used_bytes += packet.contents.size();
 
-	  fprintf( stderr, "%s %f delivery %d\n", _name.c_str(), convert_timestamp( now ) / 1000.0, int(now - packet.entry_time) );
+	  //fprintf( stderr, "%s %f delivery %d\n", _name.c_str(), convert_timestamp( now ) / 1000.0, int(now - packet.entry_time) );
 
 	  _delivered.push_back( packet.contents );
 	  bytes_to_play_with -= packet.contents.size();
@@ -265,7 +265,7 @@ void DelayQueue::tick( void )
   }
 
   while ( now / 1000 > _bin_sec ) {
-    fprintf( stderr, "%s %ld %ld / %ld = %.1f %% %ld \n", _name.c_str(), _bin_sec - (_base_timestamp / 1000), _used_bytes, _total_bytes, 100.0 * _used_bytes / (double) _total_bytes , _queued_bytes );
+    //fprintf( stderr, "%s %ld %ld / %ld = %.1f %% %ld \n", _name.c_str(), _bin_sec - (_base_timestamp / 1000), _used_bytes, _total_bytes, 100.0 * _used_bytes / (double) _total_bytes , _queued_bytes );
     _total_bytes = 0;
     _used_bytes = 0;
     _queued_bytes = 0;
@@ -298,8 +298,8 @@ int main( int argc, char *argv[] )
 
   /* Read in schedule */
   uint64_t now = timestamp();
-  DelayQueue uplink( "uplink", 20, up_filename, now , loss_rate );
-  DelayQueue downlink( "downlink", 20, down_filename, now , loss_rate);
+  DelayQueue uplink( "uplink", 2, up_filename, now , loss_rate );
+  DelayQueue downlink( "downlink", 2, down_filename, now , loss_rate);
 
   Select &sel = Select::get_instance();
   sel.add_fd( internet_side.fd() );
